@@ -19,6 +19,9 @@ export default class Verifier {
         aud: string;
     };
     private generateChallenge;
+    getVPClaims(vp: JWT): any;
+    getVCClaims(vc: JWT): any;
+    isValid(jwt: JWT): Promise<boolean>;
     isValidVP(vp: JWT): Promise<boolean>;
     isValidVC(vc: JWT, holder?: DID): Promise<boolean>;
     isRevoked(did: DID): Promise<boolean>;

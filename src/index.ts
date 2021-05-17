@@ -1,4 +1,4 @@
-// import { decodeJWT } from 'did-jwt';
+import { decodeJWT } from 'did-jwt';
 import { verifyPresentation, verifyCredential, VerifiablePresentation, VerifiableCredential } from 'did-jwt-vc';
 import { Resolver, Resolvable } from 'did-resolver';
 import { getResolver, ConfigurationOptions } from 'infra-did-resolver';
@@ -8,22 +8,27 @@ export interface VerifierConfig {
     resolver?: Resolvable
     networkConfig: ConfigurationOptions
     did: string
-    knownIssuer: string[]
+    knownIssuers: Issuer[]
 }
 
 export type JWT = string
 export type DID = string
+export type Issuer = {
+    id: string,
+    did: DID
+}
 
 export default class Verifier {
     public resolver: Resolvable
     public challenge: string
     public did: string
-    public knownIssuer: string[]
+    public knownIssuers: Issuer[]
 
     constructor (config : VerifierConfig) {
         this.resolver = config.resolver ? config.resolver : new Resolver(getResolver(config.networkConfig));
         this.did = config.did ? config.did : InfraDID.createPubKeyDIDsecp256k1('01').did;
-        this.knownIssuer = config.knownIssuer;
+        this.challenge = '';
+        this.knownIssuers = config.knownIssuers;
     }
 
     public ready() : { challenge: string, aud: string } {
@@ -36,25 +41,25 @@ export default class Verifier {
         return InfraDID.createPubKeyDIDsecp256k1('01').did;
     }
 
-    // public getVPClaims(vp: JWT) : any {
-    //     const vcList = decodeJWT(vp).payload.vp.verifiableCredential;
-    //     return vcList.map((vc) => {
-    //         return this.getVCClaims(vc);
-    //     }).reduce((result, claims) => {
-    //         return { ...claims, ...result }
-    //     }, {});
-    // }
+    public getVPClaims(vp: JWT) : any {
+        const vcList = decodeJWT(vp).payload.vp.verifiableCredential;
+        return vcList.map((vc : JWT) => {
+            return this.getVCClaims(vc);
+        }).reduce((result : any, claims : any) => {
+            return { ...claims, ...result }
+        }, {});
+    }
 
-    // public getVCClaims(vc: JWT) : any {
-    //     return decodeJWT(vc).payload.vc.credentialSubject;
-    // }
+    public getVCClaims(vc: JWT) : any {
+        return decodeJWT(vc).payload.vc.credentialSubject;
+    }
 
-    // public async isValid(jwt: JWT) : Promise<boolean> {
-    //     const decoded = decodeJWT(jwt);
-    //     if (decoded.payload.vp) return this.isValidVP(jwt);
-    //     else if (decoded.payload.vc) return this.isValidVC(jwt);
-    //     else throw new Error (`Unsupported type`);
-    // }
+    public async isValid(jwt: JWT) : Promise<boolean> {
+        const decoded = decodeJWT(jwt);
+        if (decoded.payload.vp) return this.isValidVP(jwt);
+        else if (decoded.payload.vc) return this.isValidVC(jwt);
+        else throw new Error (`Unsupported type`);
+    }
 
     public async isValidVP (vp: JWT) : Promise<boolean> {
         // verify VP has been issued to the verifier with correct challenge
@@ -62,9 +67,9 @@ export default class Verifier {
         const vcList = verifiedPresentation.payload.vp.VerifiedCredential;
         const signer = verifiedPresentation.payload.signer;
         if (this.isRevoked(signer.did)) throw new Error (`Deactivated Presenter`);
-        return vcList.map((vc) => {
+        return vcList.map((vc : JWT) => {
             return this.isValidVC(vc, signer.did);
-        }, this).reduce((result, validity) => {
+        }, this).reduce((result : boolean, validity : boolean) => {
             return result && validity
         }, true)
     }
@@ -94,9 +99,9 @@ export default class Verifier {
     }
 
     public isKnownIssuer(issuer : DID) : boolean {
-        for (const key in this.knownIssuer) {
-            if (this.knownIssuer[key] === issuer) return true;
-        }
+        this.knownIssuers.forEach(knownIssuer => {
+            if (knownIssuer.did === issuer) return true;
+        });
         return false;
     }
 }
