@@ -80,7 +80,7 @@ export default class Verifier {
         if (holder && verifiedCredential.payload.sub !== holder) throw new Error (`Signer is not the subject of VC`);
 
         // verify the issuer identity is valid
-        if (this.isKnownIssuer(verifiedCredential.issuer)) throw new Error (`Unknown Issuer`);
+        if (!this.isKnownIssuer(verifiedCredential.issuer)) throw new Error (`Unknown Issuer`);
         
         // verify the issuer identity has NOT been revoked
         if (this.isRevoked(verifiedCredential.issuer)) throw new Error (`Deactivated Issuer`);
@@ -99,9 +99,8 @@ export default class Verifier {
     }
 
     public isKnownIssuer(issuer : DID) : boolean {
-        this.knownIssuers.forEach(knownIssuer => {
-            if (knownIssuer.did === issuer) return true;
-        });
-        return false;
+        const found = this.knownIssuers.some(known => known.did === issuer)
+        if (!found) return false
+        return true
     }
 }

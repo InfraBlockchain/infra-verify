@@ -4,15 +4,19 @@ export interface VerifierConfig {
     resolver?: Resolvable;
     networkConfig: ConfigurationOptions;
     did: string;
-    knownIssuer: string[];
+    knownIssuers: Issuer[];
 }
 export declare type JWT = string;
 export declare type DID = string;
+export declare type Issuer = {
+    id: string;
+    did: DID;
+};
 export default class Verifier {
     resolver: Resolvable;
     challenge: string;
     did: string;
-    knownIssuer: string[];
+    knownIssuers: Issuer[];
     constructor(config: VerifierConfig);
     ready(): {
         challenge: string;

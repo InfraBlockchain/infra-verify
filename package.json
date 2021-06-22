@@ -67,7 +67,7 @@
     "did-jwt": "^5.3.1",
     "did-jwt-vc": "^2.1.0",
     "did-resolver": "^3.1.0",
-    "infra-did-js": "^0.4.2",
+    "infra-did-js": "^0.4.3",
     "infra-did-resolver": "^0.3.2"
   }
 }
