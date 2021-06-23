@@ -21,3 +21,6 @@ package-lock.json
 
 # Testing
 coverage
+
+# Build
+lib
