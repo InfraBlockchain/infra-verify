@@ -1,7 +1,6 @@
-import { Resolvable } from 'did-resolver';
 import { ConfigurationOptions } from 'infra-did-resolver';
 export interface VerifierConfig {
-    resolver?: Resolvable;
+    resolver?: any;
     networkConfig: ConfigurationOptions;
     did: string;
     knownIssuers: Issuer[];
@@ -13,7 +12,7 @@ export declare type Issuer = {
     did: DID;
 };
 export default class Verifier {
-    resolver: Resolvable;
+    resolver: any;
     challenge: string;
     did: string;
     knownIssuers: Issuer[];
