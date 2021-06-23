@@ -21,8 +21,7 @@ const issuers = [
     },
     {
         id: 'moh',
-        did: 'did:infra:01:PUB_K1_7rEaMfP2WWjUN3QPyf6Bc2oWFrwP6c38dGpdSZJCvu1nhQrZmc',
-        privateKey: 'PVT_K1_2ij128AyqWRFupaqKa92C92vsHYLLPoMxtvF3QFnVYx5pGc9Bu'
+        did: 'did:infra:01:PUB_K1_6WGrvnuG7xFxCFA4dPrefh93HUdG7d1fjUQNsZXQ6JfRC6G3ZC',
     }
 ]
 const holder = {
@@ -34,27 +33,27 @@ const verifier = {
   privateKey: 'PVT_K1_6xS23G7RgdGWsvwSfy8YKLPSHYUddDJC9R5H6xt8kgTTpzVkE'
 }
 
-const vcJWT = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NksifQ.eyJ2YyI6eyJjcmVkZW50aWFsU3ViamVjdCI6eyJjbGFpbTEiOiJjbGFpbTFfdmFsdWUiLCJjbGFpbTIiOiJjbGFpbTJfdmFsdWUifSwiQGNvbnRleHQiOlsiaHR0cHM6Ly93d3cudzMub3JnLzIwMTgvY3JlZGVudGlhbHMvdjEiXSwidHlwZSI6WyJWZXJpZmlhYmxlQ3JlZGVudGlhbCIsIlZhY2NpbmF0aW9uQ3JlZGVudGlhbCJdfSwic3ViIjoiZGlkOmluZnJhOjAxOlBVQl9LMV83akNEYXJYblozU2RQQXdmRkVjaVRTeVV6QTRmbmZua3R2Rkg5Rmo3Sjg5VXJGaUhwdCIsImp0aSI6Imh0dHA6Ly9leGFtcGxlLnZjL2NyZWRlbnRpYWxzLzEyMzUzMiIsIm5iZiI6MTYyNDI1MjA4NSwiaXNzIjoiZGlkOmluZnJhOjAxOlBVQl9LMV84UHdHN29mNUI4cDlNcGF3Nlh6ZXlZdFNXSnllU1hWdHhaaFBIUUM1ZVp4WkNrcWlMVSJ9.5NZLwoyoS6XDmug4AanzJ7dXyMrnfMQ1435f4G3EB3WLjVDwI9C6DyI3MQhIh89atmMa_g3h9gLavqSRADD_0g'
+const vcJWT = 'eyJhbGciOiJFUzI1NksiLCJ0eXAiOiJKV1QifQ.eyJ2YyI6eyJpZCI6ImRpZDppbmZyYTowMTpQVUJfSzFfOFpnYnpRc1NvREd0QWE5M2hEOFdMdEJCWHk2VURuNWtpYzNaZ3FqMzRWQkZadDhYWE0iLCJAY29udGV4dCI6WyJodHRwczovL3d3dy53My5vcmcvMjAxOC9jcmVkZW50aWFscy92MSIsImh0dHBzOi8vY29vdi52Yy5pby9wZXJzb25hbCJdLCJ0eXBlIjpbIlZlcmlmaWFibGVDcmVkZW50aWFsIiwiUGVyc29uYWwiXSwiY3JlZGVudGlhbFN1YmplY3QiOnsibmFtZSI6Iuq5gOy_oOu4jCJ9fSwibmJmIjoxNjI0NDY0ODM5LCJpc3MiOiJkaWQ6aW5mcmE6MDE6UFVCX0sxXzZXR3J2bnVHN3hGeENGQTRkUHJlZmg5M0hVZEc3ZDFmalVRTnNaWFE2SmZSQzZHM1pDIn0.XVXpj9MPm6lBUu1tDLHeDvWEfXU9vw79UWcvlocWZpuiaF774gNXpMPwsAExsGcaWaQvASUbjxm18meP22LqDQ'
 
 //decoded vcJWT payload
 /*
 {
-  "iat": 1623902576,
-  "aud": "did:infra:01:PUB_K1_6XpzkXC8amUN1AQccYcVpRMBajq8b3HHhYJVZ4uJQ7pW9TJvmr",
   "vc": {
+    "id": "did:infra:01:PUB_K1_8ZgbzQsSoDGtAa93hD8WLtBBXy6UDn5kic3Zgqj34VBFZt8XXM",
     "@context": [
-      "https://www.w3.org/2018/credentials/v1"
+      "https://www.w3.org/2018/credentials/v1",
+      "https://coov.vc.io/personal"
     ],
     "type": [
-      "VerifiableCredential"
+      "VerifiableCredential",
+      "Personal"
     ],
     "credentialSubject": {
-      "id": "did:infra:01:PUB_K1_8PwG7of5B8p9Mpaw6XzeyYtSWJyeSXVtxZhPHQC5eZxZCkqiLU",
-      "claim1": "claim1_value",
-      "claim2": "claim2_value"
+      "name": "김쿠브"
     }
   },
-  "iss": "did:infra:01:PUB_K1_8PwG7of5B8p9Mpaw6XzeyYtSWJyeSXVtxZhPHQC5eZxZCkqiLU"
+  "nbf": 1624464839,
+  "iss": "did:infra:01:PUB_K1_6WGrvnuG7xFxCFA4dPrefh93HUdG7d1fjUQNsZXQ6JfRC6G3ZC"
 }
  */
 
@@ -159,14 +158,20 @@ describe('Test Verify', () => {
     const verifier = new Verifier(config);
 
     it('function getVPClaims', () => {
-        expect(verifier.getVPClaims(vpJWT)).toEqual({"claim1": "claim1_value","claim2":"claim2_value"})
+        expect(verifier.getVPClaims(vpJWT)).toBe({"claim1": "claim1_value","claim2":"claim2_value"})
     })
 
     it('function getVCClaims', () => {
-        expect(verifier.getVCClaims(vcJWT)).toEqual({
+        expect(verifier.getVCClaims(vcJWT)).toBe({
             //"id": "did:infra:01:PUB_K1_8PwG7of5B8p9Mpaw6XzeyYtSWJyeSXVtxZhPHQC5eZxZCkqiLU",
-            "claim1": "claim1_value",
-            "claim2": "claim2_value"
+            "name": "김쿠브"
+        })
+    })
+
+    it('function getVCClaims', () => {
+        expect(verifier.getVCClaims(vcJWT)).not.toBe({
+            //"id": "did:infra:01:PUB_K1_8PwG7of5B8p9Mpaw6XzeyYtSWJyeSXVtxZhPHQC5eZxZCkqiLU",
+            "claim": "something else"
         })
     })
 
@@ -227,33 +232,32 @@ describe('Test Verify', () => {
         }
         
         it("Successfully making valid VC", async () => {
-            const holder = "did:infra:01:PUB_K1_7kF9Qay9V2dRnXJQy4tz6YTmb1mdYDchXvsQtQNnaXRcaVVuLa"
+            // const holder = "did:infra:01:PUB_K1_7kF9Qay9V2dRnXJQy4tz6YTmb1mdYDchXvsQtQNnaXRcaVVuLa"
 
-            const newIssuer = InfraDID.createPubKeyDIDsecp256k1('01');
-            verifier.knownIssuers.push({id:'new Issuer', did: newIssuer.did})
+            // const newIssuer = InfraDID.createPubKeyDIDsecp256k1('01');
+            // verifier.knownIssuers.push({id:'new Issuer', did: newIssuer.did })
 
-            const issuerAPI = new InfraDID({
-                ...conf,
-                did: newIssuer.did,
-                didOwnerPrivateKey: newIssuer.privateKey,
-            });
-            const issuer = await issuerAPI.getJwtVcIssuer()
+            // const issuerAPI = new InfraDID({
+            //     ...conf,
+            //     did: newIssuer.did,
+            //     didOwnerPrivateKey: newIssuer.privateKey,
+            // });
+            // const issuer = await issuerAPI.getJwtVcIssuer()
 
-            const payload: CredentialPayload = {
-                '@context': ['https://www.w3.org/2018/credentials/v1'],
-                id: 'http://example.vc/credentials/123532',
-                type: ['VerifiableCredential', 'VaccinationCredential'],
-                // issuanceDate: '2021-03-17T12:17:26.000Z',
-                issuanceDate: new Date().toISOString(), //'2021-03-17T12:17:26.000Z',
-                credentialSubject: {
-                    id: "did:infra:01:PUB_K1_6XpzkXC8amUN1AQccYcVpRMBajq8b3HHhYJVZ4uJQ7pW9TJvmr",
-                    claim1: 'claim1_value',
-                    claim2: 'claim2_value'
-                }
-            }
-            const createdVC = await createVerifiableCredentialJwt(payload, issuer);
-            console.log(createdVC);
-            await verifier.isValidVC(createdVC)
+            // const payload: CredentialPayload = {
+            //     '@context': ['https://www.w3.org/2018/credentials/v1'],
+            //     id: 'http://example.vc/credentials/123532',
+            //     type: ['VerifiableCredential', 'VaccinationCredential'],
+            //     // issuanceDate: '2021-03-17T12:17:26.000Z',
+            //     issuanceDate: new Date().toISOString(), //'2021-03-17T12:17:26.000Z',
+            //     credentialSubject: {
+            //         id: "did:infra:01:PUB_K1_6XpzkXC8amUN1AQccYcVpRMBajq8b3HHhYJVZ4uJQ7pW9TJvmr",
+            //         claim1: 'claim1_value',
+            //         claim2: 'claim2_value'
+            //     }
+            // }
+            // const createdVC = await createVerifiableCredentialJwt(payload, issuer);
+            await verifier.isValidVC(vcJWT)
         })
 
         // it("Error : Unknown Issuer", async () => {
@@ -278,7 +282,7 @@ describe('Test Verify', () => {
         //     try {
         //         await verifier.isValidVC(createdJWTvc)
         //     } catch (err) {
-        //         expect(err.message).toEqual(`Unknown Issuer`)
+        //         expect(err.message).toBe(`Unknown Issuer`)
         //     }
         // })
         // test("Error : Deactivated Issuer", async () => {
@@ -315,7 +319,7 @@ describe('Test Verify', () => {
         //     try {
         //         await verifier.isValidVC(createdJWTvc)
         //     } catch (err) {
-        //         expect(err.message).toEqual(`Deactivated Issuer`);
+        //         expect(err.message).toBe(`Deactivated Issuer`);
         //     }
         // })
         // it("Error : Revoked VC", async () => {
@@ -352,7 +356,7 @@ describe('Test Verify', () => {
         //     try {
         //         await verifier.isValidVC(createdJWTvc);
         //     } catch (err) {
-        //         expect(err.message).toEqual(`Revoked VC`);
+        //         expect(err.message).toBe(`Revoked VC`);
         //     }
         // })
         // it("Return True", async () => {

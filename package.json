@@ -35,16 +35,17 @@
     "@types/jest": "^26.0.23",
     "@types/node": "^15.12.4",
     "babel-jest": "^27.0.5",
+    "did-jwt-vc": "^2.1.3",
     "jest": "^27.0.5",
     "microbundle": "^0.13.3",
     "prettier": "^2.3.1",
+    "semantic-release": "^17.4.4",
     "ts-lint": "^4.5.1",
     "tslint-config-prettier": "^1.18.0",
     "tslint-eslint-rules": "^5.4.0",
     "typescript": "^4.3.4"
   },
   "dependencies": {
-    "did-jwt-vc": "2.0.0",
     "infra-did-js": "^0.4.3",
     "infra-did-resolver": "^0.3.2"
   }
