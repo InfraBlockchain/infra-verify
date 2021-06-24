@@ -1,11 +1,11 @@
 import { decodeJWT } from 'did-jwt';
 import { verifyPresentation, verifyCredential, VerifiablePresentation, VerifiableCredential } from 'did-jwt-vc';
-import { Resolver, Resolvable } from 'did-resolver';
+import { Resolver } from 'did-resolver';
 import { getResolver, ConfigurationOptions } from 'infra-did-resolver';
 import InfraDID from 'infra-did-js';
 
 export interface VerifierConfig {
-    resolver?: Resolvable
+    resolver?: any
     networkConfig: ConfigurationOptions
     did: string
     knownIssuers: Issuer[]
@@ -19,7 +19,7 @@ export type Issuer = {
 }
 
 export default class Verifier {
-    public resolver: Resolvable
+    public resolver: any
     public challenge: string
     public did: string
     public knownIssuers: Issuer[]
@@ -83,17 +83,24 @@ export default class Verifier {
         if (!this.isKnownIssuer(verifiedCredential.issuer)) throw new Error (`Unknown Issuer`);
         
         // verify the issuer identity has NOT been revoked
-        if (this.isRevoked(verifiedCredential.issuer)) throw new Error (`Deactivated Issuer`);
+        const revokedIssuer = await this.isRevoked(verifiedCredential.issuer);
+        if (revokedIssuer) throw new Error (`Deactivated Issuer`);
         
-        // verify the VC has NOT been revoked
+        // check if VC ID exists
         const vcID = verifiedCredential.payload.vc.id;
-        if (this.isRevoked(vcID)) throw new Error (`Revoked VC`);
+        if (!vcID) throw new Error (`Invalid VC format: VC id does not exist`)
+
+        // verify the VC has NOT been revoked
+        const revokedVC = await this.isRevoked(vcID);
+        if (revokedVC) throw new Error (`Revoked VC`);
 
         return true;
     }
 
     public async isRevoked(did : DID) : Promise<boolean> {
         const didDoc = await this.resolver.resolve(did);
+        if (didDoc.didResolutionMetadata.error) throw `DID Resolved Metadata: ${didDoc.didResolutionMetadata.error}, for DID: ${did}`;
+        if (!didDoc.didDocument) throw `DID Resolve Failed: No document resolved, DID: ${did}`;
         if (didDoc.didDocumentMetadata.deactivated) return true;
         return false;
     }
