@@ -64,11 +64,17 @@ export default class Verifier {
     public async isValidVP (vp: JWT) : Promise<boolean> {
         // verify VP has been issued to the verifier with correct challenge
         const verifiedPresentation = await verifyPresentation(vp, this.resolver, { challenge: this.challenge, audience: this.did })
-        const vcList = verifiedPresentation.payload.vp.VerifiedCredential;
-        const signer = verifiedPresentation.payload.signer;
-        if (this.isRevoked(signer.did)) throw new Error (`Deactivated Presenter`);
+        //const vcList = verifiedPresentation.payload.vp.VerifiedCredential;
+        // const signer = verifiedPresentation.payload.signer;
+        const vcList = verifiedPresentation.payload.vp.verifiableCredential;
+        const signer = verifiedPresentation.signer
+
+        //if (this.isRevoked(signer.did)) throw new Error (`Deactivated Presenter`);
+        //await를 안쓰면, pending이 나와서 true로 리턴됨, signer.id는 verifiedPresentation.signer에 있음
+        if (await this.isRevoked(signer.id)) throw new Error (`Deactivated Presenter`);
         return vcList.map((vc : JWT) => {
-            return this.isValidVC(vc, signer.did);
+            //return this.isValidVC(vc, signer.did);
+            return this.isValidVC(vc, signer.id);
         }, this).reduce((result : boolean, validity : boolean) => {
             return result && validity
         }, true)
@@ -83,12 +89,12 @@ export default class Verifier {
         if (!this.isKnownIssuer(verifiedCredential.issuer)) throw new Error (`Unknown Issuer`);
         
         // verify the issuer identity has NOT been revoked
-        if (this.isRevoked(verifiedCredential.issuer)) throw new Error (`Deactivated Issuer`);
-        
+        //if (this.isRevoked(verifiedCredential.issuer)) throw new Error (`Deactivated Issuer`);
+        if (await this.isRevoked(verifiedCredential.issuer)) throw new Error (`Deactivated Issuer`);
         // verify the VC has NOT been revoked
         const vcID = verifiedCredential.payload.vc.id;
-        if (this.isRevoked(vcID)) throw new Error (`Revoked VC`);
-
+        //if (this.isRevoked(vcID)) throw new Error (`Revoked VC`);
+        if (await this.isRevoked(vcID)) throw new Error (`Revoked VC`);
         return true;
     }
 
