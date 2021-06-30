@@ -127,7 +127,7 @@ var Verifier = /** @class */ (function () {
                         if (holder && verifiedCredential.payload.sub !== holder)
                             throw new Error("Signer is not the subject of VC");
                         // verify the issuer identity is valid
-                        if (this.isKnownIssuer(verifiedCredential.issuer))
+                        if (!this.isKnownIssuer(verifiedCredential.issuer))
                             throw new Error("Unknown Issuer");
                         // verify the issuer identity has NOT been revoked
                         if (this.isRevoked(verifiedCredential.issuer))

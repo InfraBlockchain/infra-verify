@@ -1,6 +1,6 @@
 import { decodeJWT } from 'did-jwt';
 import { verifyPresentation, verifyCredential, VerifiablePresentation, VerifiableCredential } from 'did-jwt-vc';
-import { Resolver, Resolvable } from 'did-resolver';
+import { Resolver, Resolvable, DIDResolutionResult } from 'did-resolver';
 import { getResolver, ConfigurationOptions } from 'infra-did-resolver';
 import InfraDID from 'infra-did-js';
 
@@ -64,11 +64,11 @@ export default class Verifier {
     public async isValidVP (vp: JWT) : Promise<boolean> {
         // verify VP has been issued to the verifier with correct challenge
         const verifiedPresentation = await verifyPresentation(vp, this.resolver, { challenge: this.challenge, audience: this.did })
-        const vcList = verifiedPresentation.payload.vp.VerifiedCredential;
-        const signer = verifiedPresentation.payload.signer;
-        if (this.isRevoked(signer.did)) throw new Error (`Deactivated Presenter`);
+        const vcList = verifiedPresentation.payload.vp.verifiableCredential;
+        const signer  = verifiedPresentation.payload.iss;
+        if (signer && await this.isRevoked(signer)) throw new Error (`Deactivated Presenter`);
         return vcList.map((vc : JWT) => {
-            return this.isValidVC(vc, signer.did);
+            return this.isValidVC(vc, signer);
         }, this).reduce((result : boolean, validity : boolean) => {
             return result && validity
         }, true)
@@ -78,22 +78,18 @@ export default class Verifier {
         // verify VC has NOT been tampered
         const verifiedCredential = await verifyCredential(vc, this.resolver);
         if (holder && verifiedCredential.payload.sub !== holder) throw new Error (`Signer is not the subject of VC`);
-
         // verify the issuer identity is valid
         if (!this.isKnownIssuer(verifiedCredential.issuer)) throw new Error (`Unknown Issuer`);
-        
         // verify the issuer identity has NOT been revoked
-        if (this.isRevoked(verifiedCredential.issuer)) throw new Error (`Deactivated Issuer`);
-        
+        if (await this.isRevoked(verifiedCredential.issuer)) throw new Error (`Deactivated Issuer`);
         // verify the VC has NOT been revoked
         const vcID = verifiedCredential.payload.vc.id;
-        if (this.isRevoked(vcID)) throw new Error (`Revoked VC`);
-
+        if (await this.isRevoked(vcID)) throw new Error (`Revoked VC`);
         return true;
     }
 
     public async isRevoked(did : DID) : Promise<boolean> {
-        const didDoc = await this.resolver.resolve(did);
+        const didDoc : DIDResolutionResult = await this.resolver.resolve(did);
         if (didDoc.didDocumentMetadata.deactivated) return true;
         return false;
     }
