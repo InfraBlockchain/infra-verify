@@ -11,7 +11,7 @@ npm install infra-verify-js
 ## Usage
 
 ### Verify Configuration
-```
+```typescript
 import Verifier, {VerifierConfig} from "infra-verify-js";
 
 const issuerDID =[
@@ -47,7 +47,7 @@ const verifier = new Verifier(config);
 
 ### Get verifiable credential claims(getVCClaims)
 Extract claims in JWT format from the verifiable credential.
-```
+```typescript
 const vcJWT = 'eyJhbGciOiJFUzI1NksiLCJ0eXAiOiJKV1QifQ.eyJ2YyI6eyJpZCI6ImRpZDppbmZyYTowMTpQVUJfSzFfOFpnYnpRc1NvREd0QWE5M2hEOFdMdEJCWHk2VURuNWtpYzNaZ3FqMzRWQkZadDhYWE0iLCJAY29udGV4dCI6WyJodHRwczovL3d3dy53My5vcmcvMjAxOC9jcmVkZW50aWFscy92MSIsImh0dHBzOi8vY29vdi52Yy5pby9wZXJzb25hbCJdLCJ0eXBlIjpbIlZlcmlmaWFibGVDcmVkZW50aWFsIiwiUGVyc29uYWwiXSwiY3JlZGVudGlhbFN1YmplY3QiOnsibmFtZSI6Iuq5gOy_oOu4jCJ9fSwibmJmIjoxNjI0NDY0ODM5LCJpc3MiOiJkaWQ6aW5mcmE6MDE6UFVCX0sxXzZXR3J2bnVHN3hGeENGQTRkUHJlZmg5M0hVZEc3ZDFmalVRTnNaWFE2SmZSQzZHM1pDIn0.XVXpj9MPm6lBUu1tDLHeDvWEfXU9vw79UWcvlocWZpuiaF774gNXpMPwsAExsGcaWaQvASUbjxm18meP22LqDQ'
 
 /*
@@ -83,7 +83,7 @@ Validate verifiable credentials or verifiable presentations in JWT format.
 * Verify that verifiable credential issued by known issuer.
 * Verify that revoked issuer.
 * Verify that revoked verifiable credential.
-```
+```typescript
 verifier.isValid(vcJWT).then(result => {
     console.log(result)
 }).catch(err => {
@@ -96,7 +96,7 @@ verifier.isValid(vcJWT).then(result => {
 #### Verifiable presentation validation(isValidVP)
 * Verify that revoked verifiable presentation.
 * Validation of verifiable credentials embedded in verifiable presentations (equivalent to verifiable credentials validation)
-```
+```typescript
 verifier.isValid(vpJWT).then(result => {
     console.log(result)
 }).catch(err => {
@@ -109,7 +109,7 @@ verifier.isValid(vpJWT).then(result => {
 
 ### DID revoke check(isRevoked)
 Resolve the DID to check whether it is revoke or not.
-```
+```typescript
 verifier.isRevoked(verifierDID.did).then(result => {
     console.log(result)
 }).catch(err => {
@@ -122,6 +122,6 @@ verifier.isRevoked(verifierDID.did).then(result => {
 
 ### Issuer check(isKnownIssuer)
 Verify that it is a known (trusted) issuer
-```
+```typescript
 console.log(verifier.isKnownIssuer(verifierDID.did))
 ```
